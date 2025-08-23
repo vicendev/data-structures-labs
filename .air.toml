@@ -1,0 +1,21 @@
+root = "."
+tmp_dir = "tmp"
+
+[build]
+# Comando para compilar tu proyecto
+cmd = "go build -o ./tmp/main ./src/main.go"
+bin = "./tmp/main"
+include_ext = ["go"]
+exclude_dir = ["tmp", ".git", "bin"]
+
+[log]
+time = true
+
+[color]
+main = "magenta"
+watcher = "cyan"
+build = "yellow"
+runner = "green"
+
+[misc]
+clean_on_exit = true

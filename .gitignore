@@ -1,0 +1,42 @@
+# Compilados de Go
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Binarios generados
+/bin/
+/build/
+/dist/
+/tmp/
+/*.log
+
+# Archivos de dependencias
+vendor/
+*.sum
+
+# Archivos de configuración locales
+.env
+*.local
+
+# Archivos del IDE/editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db
+
+# Coverage / testing
+coverage.out
+*.coverprofile
+
+# Swagger / auto-generated docs
+docs/swagger/*
+!docs/swagger/.gitkeep
