@@ -44,7 +44,6 @@ func (s *stack) Push(value string) error {
 	}
 
 	s.top++
-	println(s.top)
 	s.elements[s.top] = value
 	return nil
 }
