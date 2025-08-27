@@ -55,10 +55,6 @@ func (q *queue) Enqueue(value string) error {
 
 	q.elements[q.tail] = value
 
-	println(q.tail, q.head)
-	for i := 0; i < len(q.elements); i++ {
-		println(q.elements[i])
-	}
 	return nil
 }
 
@@ -77,10 +73,6 @@ func (q *queue) Dequeue() (string, error) {
 	value := q.elements[q.head]
 	q.elements[q.head] = ""
 
-	println(q.tail, q.head)
-	for i := 0; i < len(q.elements); i++ {
-		println(q.elements[i])
-	}
 	return value, nil
 }
 
