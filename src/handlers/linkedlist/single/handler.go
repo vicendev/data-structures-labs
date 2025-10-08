@@ -64,21 +64,21 @@ func (handler *SingleLinkedListHanlder) Find(c *gin.Context) {
 		return
 	}
 
-	response, err := handler.singleLinkedListService.Find(request.Value)
+	node, err := handler.singleLinkedListService.Find(request.Value)
 
 	if err != nil {
 		c.JSON(409, gin.H{"error": err.Error()})
 		return
 	}
 
-	if response == nil {
+	if node == nil {
 		c.JSON(404, gin.H{"error": "node not found"})
 		return
 	}
 
 	c.JSON(200, gin.H{
 		"status": "node found",
-		"value":  response,
+		"value":  node,
 	})
 
 }

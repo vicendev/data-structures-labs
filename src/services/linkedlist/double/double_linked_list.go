@@ -5,12 +5,12 @@ import (
 )
 
 var (
-	ErrEmpty         = errors.New("single linked list is empty")
-	ErrIndexNotFound = errors.New("single linked list index not found")
-	ErrNotFound      = errors.New("single linked list node not found")
+	ErrEmpty         = errors.New("double linked list is empty")
+	ErrIndexNotFound = errors.New("double linked list index not found")
+	ErrNotFound      = errors.New("double linked list node not found")
 )
 
-type SingleLinkedListService interface {
+type DoubleLinkedListService interface {
 	// Insertion Methods
 	AddFirst(value string)
 	AddLast(value string)
@@ -25,47 +25,50 @@ type SingleLinkedListService interface {
 	Clear()
 
 	// Accessibility Methods
-	GetAt(index int) (*node, error)
-	Find(value string) (*node, error)
+	GetAt(index int) (*Node, error)
+	Find(value string) (*Node, error)
 	IndexOf(value string) (int, error)
 }
 
-type node struct {
+type Node struct {
 	Value string
-	Next  *node
+	Next  *Node
+	Prev  *Node
 }
 
 type linkedList struct {
-	head *node
-	tail *node
+	head *Node
+	tail *Node
 	size int
 }
 
-func NewSingleLinkedList() SingleLinkedListService {
+func NewDoubleLinkedList() DoubleLinkedListService {
 	return &linkedList{}
 }
 
-// AddFirst implements SingleLinkedListService.
 func (l *linkedList) AddFirst(newValue string) {
-	newNode := &node{Value: newValue, Next: l.head}
-
-	l.head = newNode
-
-	if l.tail == nil {
+	newNode := &Node{Value: newValue}
+	if l.head == nil {
+		l.head = newNode
 		l.tail = newNode
+	} else {
+		newNode.Next = l.head
+		newNode.Next.Prev = newNode
+		l.head = newNode
 	}
 
 	l.size++
 }
 
-// AddLast implements SingleLinkedListService.
+// AddLast implements DoubleLinkedListService.
 func (l *linkedList) AddLast(newValue string) {
-	newNode := &node{Value: newValue, Next: nil}
+	newNode := &Node{Value: newValue}
 
 	if l.tail == nil {
 		l.head = newNode
 		l.tail = newNode
 	} else {
+		newNode.Prev = l.tail
 		l.tail.Next = newNode
 		l.tail = newNode
 	}
@@ -73,20 +76,20 @@ func (l *linkedList) AddLast(newValue string) {
 	l.size++
 }
 
-// Clear implements SingleLinkedListService.
+// Clear implements DoubleLinkedListService.
 func (l *linkedList) Clear() {
 	l.head = nil
 	l.tail = nil
 	l.size = 0
 }
 
-// Find implements SingleLinkedListService.
-func (l *linkedList) Find(searchValue string) (*node, error) {
+// Find implements DoubleLinkedListService.
+func (l *linkedList) Find(value string) (*Node, error) {
 	if err := l.validateEmpty(); err != nil {
 		return nil, err
 	}
 
-	foundNode, _, _ := l.findByValue(searchValue)
+	foundNode, _, _ := l.findByValue(value)
 
 	if foundNode != nil {
 		return foundNode, nil
@@ -95,8 +98,7 @@ func (l *linkedList) Find(searchValue string) (*node, error) {
 	return nil, ErrNotFound
 }
 
-// GetAt implements SingleLinkedListService.
-func (l *linkedList) GetAt(nodeIndex int) (*node, error) {
+func (l *linkedList) GetAt(nodeIndex int) (*Node, error) {
 	if err := l.validateEmpty(); err != nil {
 		return nil, err
 	}
@@ -110,12 +112,12 @@ func (l *linkedList) GetAt(nodeIndex int) (*node, error) {
 	return nil, ErrIndexNotFound
 }
 
-func (l *linkedList) IndexOf(searchValue string) (int, error) {
+func (l *linkedList) IndexOf(value string) (int, error) {
 	if err := l.validateEmpty(); err != nil {
 		return -1, err
 	}
 
-	_, _, index := l.findByValue(searchValue)
+	_, _, index := l.findByValue(value)
 
 	if index >= 0 {
 		return index, nil
@@ -124,13 +126,40 @@ func (l *linkedList) IndexOf(searchValue string) (int, error) {
 	return -1, nil
 }
 
-// InsertAt implements SingleLinkedListService.
-func (l *linkedList) InsertAt(nodeIndex int, value string) error {
+func (l *linkedList) InsertAfter(searchValue string, newValue string) error {
+	if err := l.validateEmpty(); err != nil {
+		return err
+	}
+
+	foundNode, _, _ := l.findByValue(searchValue)
+
+	if foundNode == nil {
+		return ErrNotFound
+	}
+
+	newNode := &Node{Value: newValue, Next: foundNode.Next, Prev: foundNode}
+	foundNode.Next = newNode
+
+	if newNode.Next != nil {
+		newNode.Next.Prev = newNode
+	}
+
+	if foundNode == l.tail {
+		l.tail = newNode
+	}
+
+	l.size++
+
+	return nil
+}
+
+// InsertAt implements DoubleLinkedListService.
+func (l *linkedList) InsertAt(nodeIndex int, newValue string) error {
 	if err := l.validateIndex(nodeIndex, true); err != nil {
 		return err
 	}
 
-	newNode := &node{Value: value}
+	newNode := &Node{Value: newValue}
 
 	if nodeIndex == 0 {
 		newNode.Next = l.head
@@ -145,16 +174,21 @@ func (l *linkedList) InsertAt(nodeIndex int, value string) error {
 	}
 
 	if nodeIndex == l.size {
+		newNode.Prev = l.tail
 		l.tail.Next = newNode
 		l.tail = newNode
 
 		l.size++
+
 		return nil
 	}
 
 	foundNode, prevNode := l.findByIndex(nodeIndex)
 	if foundNode != nil {
 		newNode.Next = foundNode
+		foundNode.Prev = newNode
+
+		newNode.Prev = prevNode
 		prevNode.Next = newNode
 
 		l.size++
@@ -164,30 +198,7 @@ func (l *linkedList) InsertAt(nodeIndex int, value string) error {
 	return ErrIndexNotFound
 }
 
-func (l *linkedList) InsertAfter(searchValue string, newValue string) error {
-	if err := l.validateEmpty(); err != nil {
-		return err
-	}
-
-	foundNode, _, _ := l.findByValue(searchValue)
-
-	if foundNode == nil {
-		return ErrNotFound
-	}
-
-	newNode := &node{Value: newValue, Next: foundNode.Next}
-	foundNode.Next = newNode
-
-	if foundNode == l.tail {
-		l.tail = newNode
-	}
-
-	l.size++
-
-	return nil
-}
-
-// Remove implements SingleLinkedListService.
+// Remove implements DoubleLinkedListService.
 func (l *linkedList) Remove(searchValue string) (string, error) {
 	if err := l.validateEmpty(); err != nil {
 		return "", err
@@ -207,7 +218,7 @@ func (l *linkedList) Remove(searchValue string) (string, error) {
 	return removedValue, nil
 }
 
-// RemoveAt implements SingleLinkedListService.
+// RemoveAt implements DoubleLinkedListService.
 func (l *linkedList) RemoveAt(nodeIndex int) (string, error) {
 	if err := l.validateEmpty(); err != nil {
 		return "", err
@@ -227,7 +238,7 @@ func (l *linkedList) RemoveAt(nodeIndex int) (string, error) {
 	return removedValue, nil
 }
 
-// RemoveFirst implements SingleLinkedListService.
+// RemoveFirst implements DoubleLinkedListService.
 func (l *linkedList) RemoveFirst() (string, error) {
 	if err := l.validateEmpty(); err != nil {
 		return "", err
@@ -240,25 +251,25 @@ func (l *linkedList) RemoveFirst() (string, error) {
 	return removedValue, nil
 }
 
-// RemoveLast implements SingleLinkedListService.
+// RemoveLast implements DoubleLinkedListService.
 func (l *linkedList) RemoveLast() (string, error) {
 	if err := l.validateEmpty(); err != nil {
 		return "", err
 	}
 
-	foundNode, prevNode, _ := l.findLastWithPrev()
-
-	removedValue := foundNode.Value
-	l.unlinkNode(foundNode, prevNode)
+	removedValue := l.tail.Value
+	l.unlinkNode(l.tail, nil)
 
 	l.size--
 	return removedValue, nil
 }
 
-func (l *linkedList) findByValue(value string) (*node, *node, int) {
+/* Private Functions */
+
+func (l *linkedList) findByValue(value string) (*Node, *Node, int) {
 	index := 0
 	currentNode := l.head
-	var prevNode *node = nil
+	var prevNode *Node = nil
 	for currentNode != nil {
 
 		if currentNode.Value == value {
@@ -273,9 +284,9 @@ func (l *linkedList) findByValue(value string) (*node, *node, int) {
 	return nil, nil, -1
 }
 
-func (l *linkedList) findByIndex(index int) (*node, *node) {
+func (l *linkedList) findByIndex(index int) (*Node, *Node) {
 	currentNode := l.head
-	var prevNode *node = nil
+	var prevNode *Node = nil
 
 	for i := 0; i < index; i++ {
 		if currentNode == nil {
@@ -288,25 +299,7 @@ func (l *linkedList) findByIndex(index int) (*node, *node) {
 	return currentNode, prevNode
 }
 
-func (l *linkedList) findLastWithPrev() (*node, *node, int) {
-	index := 0
-	currentNode := l.head
-	var prevNode *node = nil
-	for currentNode != nil {
-
-		if currentNode.Next == nil {
-			return currentNode, prevNode, index
-		}
-
-		prevNode = currentNode
-		currentNode = currentNode.Next
-		index++
-	}
-
-	return nil, nil, -1
-}
-
-func (l *linkedList) unlinkNode(currentNode *node, prevNode *node) {
+func (l *linkedList) unlinkNode(currentNode *Node, prevNode *Node) {
 	if currentNode == l.head && currentNode == l.tail {
 		l.head = nil
 		l.tail = nil
@@ -316,6 +309,7 @@ func (l *linkedList) unlinkNode(currentNode *node, prevNode *node) {
 
 	if currentNode == l.head {
 		l.head = currentNode.Next
+		l.head.Prev = nil
 		return
 	}
 
@@ -323,12 +317,16 @@ func (l *linkedList) unlinkNode(currentNode *node, prevNode *node) {
 		l.tail = prevNode
 		if l.tail != nil {
 			l.tail.Next = nil
+			l.tail.Prev = prevNode.Prev
 		}
 		return
 	}
 
 	prevNode.Next = currentNode.Next
+	prevNode.Next.Prev = currentNode.Prev
 }
+
+/* Validations */
 
 func (l *linkedList) validateEmpty() error {
 	if l.head == nil {
@@ -339,6 +337,7 @@ func (l *linkedList) validateEmpty() error {
 }
 
 func (l *linkedList) validateIndex(index int, allowEqualSize bool) error {
+
 	if index < 0 {
 		return ErrIndexNotFound
 	}

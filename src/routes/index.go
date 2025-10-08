@@ -8,4 +8,5 @@ func RegisterRoutes(r *gin.Engine) {
 	RegisterStackRoutes(r)
 	RegisterQueueRoutes(r)
 	RegisterSingleLinkedListRoutes(r)
+	RegisterDoubleLinkedListRoutes(r)
 }
