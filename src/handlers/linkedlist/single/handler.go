@@ -6,17 +6,17 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type SingleLinkedListHanlder struct {
+type SingleLinkedListHandler struct {
 	singleLinkedListService linkedlist.SingleLinkedListService
 }
 
-func NewSingleLinkedListHandler() *SingleLinkedListHanlder {
-	return &SingleLinkedListHanlder{
+func NewSingleLinkedListHandler() *SingleLinkedListHandler {
+	return &SingleLinkedListHandler{
 		singleLinkedListService: linkedlist.NewSingleLinkedList(),
 	}
 }
 
-func (handler *SingleLinkedListHanlder) AddFirst(c *gin.Context) {
+func (handler *SingleLinkedListHandler) AddFirst(c *gin.Context) {
 	var request NodeValue
 
 	if err := c.ShouldBindJSON(&request); err != nil {
@@ -33,7 +33,7 @@ func (handler *SingleLinkedListHanlder) AddFirst(c *gin.Context) {
 
 }
 
-func (handler *SingleLinkedListHanlder) AddLast(c *gin.Context) {
+func (handler *SingleLinkedListHandler) AddLast(c *gin.Context) {
 	var request NodeValue
 
 	if err := c.ShouldBindJSON(&request); err != nil {
@@ -50,13 +50,13 @@ func (handler *SingleLinkedListHanlder) AddLast(c *gin.Context) {
 
 }
 
-func (handler *SingleLinkedListHanlder) Clear(c *gin.Context) {
+func (handler *SingleLinkedListHandler) Clear(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"status": "single linked list cleared",
 	})
 }
 
-func (handler *SingleLinkedListHanlder) Find(c *gin.Context) {
+func (handler *SingleLinkedListHandler) Find(c *gin.Context) {
 	var request NodeValue
 
 	if err := c.ShouldBindJSON(&request); err != nil {
@@ -83,7 +83,7 @@ func (handler *SingleLinkedListHanlder) Find(c *gin.Context) {
 
 }
 
-func (handler *SingleLinkedListHanlder) GetAt(c *gin.Context) {
+func (handler *SingleLinkedListHandler) GetAt(c *gin.Context) {
 	var request NodeIndex
 
 	if err := c.ShouldBindJSON(&request); err != nil {
@@ -110,7 +110,7 @@ func (handler *SingleLinkedListHanlder) GetAt(c *gin.Context) {
 
 }
 
-func (handler *SingleLinkedListHanlder) InsertAt(c *gin.Context) {
+func (handler *SingleLinkedListHandler) InsertAt(c *gin.Context) {
 	var request NodeInsertAt
 
 	if err := c.ShouldBindJSON(&request); err != nil {
@@ -130,7 +130,7 @@ func (handler *SingleLinkedListHanlder) InsertAt(c *gin.Context) {
 
 }
 
-func (handler *SingleLinkedListHanlder) InsertAfter(c *gin.Context) {
+func (handler *SingleLinkedListHandler) InsertAfter(c *gin.Context) {
 	var request NodeInsertAfter
 
 	if err := c.ShouldBindJSON(&request); err != nil {
@@ -150,7 +150,7 @@ func (handler *SingleLinkedListHanlder) InsertAfter(c *gin.Context) {
 
 }
 
-func (handler *SingleLinkedListHanlder) Remove(c *gin.Context) {
+func (handler *SingleLinkedListHandler) Remove(c *gin.Context) {
 	var request NodeValue
 
 	if err := c.ShouldBindJSON(&request); err != nil {
@@ -172,7 +172,7 @@ func (handler *SingleLinkedListHanlder) Remove(c *gin.Context) {
 
 }
 
-func (handler *SingleLinkedListHanlder) RemoveAt(c *gin.Context) {
+func (handler *SingleLinkedListHandler) RemoveAt(c *gin.Context) {
 	var request NodeIndex
 
 	if err := c.ShouldBindJSON(&request); err != nil {
@@ -194,7 +194,7 @@ func (handler *SingleLinkedListHanlder) RemoveAt(c *gin.Context) {
 
 }
 
-func (handler *SingleLinkedListHanlder) RemoveLast(c *gin.Context) {
+func (handler *SingleLinkedListHandler) RemoveLast(c *gin.Context) {
 	response, err := handler.singleLinkedListService.RemoveLast()
 
 	if err != nil {
@@ -208,7 +208,7 @@ func (handler *SingleLinkedListHanlder) RemoveLast(c *gin.Context) {
 	})
 }
 
-func (handler *SingleLinkedListHanlder) RemoveFirst(c *gin.Context) {
+func (handler *SingleLinkedListHandler) RemoveFirst(c *gin.Context) {
 	response, err := handler.singleLinkedListService.RemoveFirst()
 
 	if err != nil {
