@@ -6,14 +6,17 @@ This is a simple application that uses the Golang framework Gin to create a REST
 
 - Queue
 - Stack
+- Single Linked List
+- Double Linked List
+- Skip List
+- Hash Table
 - More to come...
 
-The application is designed to be used as a learning tool for data structures and algorithms. The application is not meant to be used in production.
+The application is designed to be used as a learning project for data structures and algorithms. The application is not meant to be used in production.
 
 ### Installation
 
 To install the application, follow these steps:
-
 
 
 1. Clone the repository:
@@ -22,10 +25,10 @@ To install the application, follow these steps:
 git clone https://github.com/vmoyano/data-structures-labs.git
 ```
 
-2. Change to the `golabs` directory:
+2. Change to the `data-structures-labs` directory:
 
 ```bash
-cd golabs
+cd data-structures-labs
 ```
 
 3. Install air dependencies:
