@@ -11,4 +11,5 @@ func RegisterRoutes(r *gin.Engine) {
 	RegisterDoubleLinkedListRoutes(r)
 	RegisterSkipListRoutes(r)
 	RegisterHashTableRoutes(r)
+	RegisterBinaryTreeRoutes(r)
 }

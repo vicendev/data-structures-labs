@@ -3,7 +3,6 @@ package hashtable
 import (
 	"errors"
 	hashtable "golabs/src/services/hashtable"
-	"golabs/src/services/skiplist"
 
 	"github.com/gin-gonic/gin"
 )
@@ -85,7 +84,7 @@ func (handler *HashTableHandler) Get(c *gin.Context) {
 
 	valueFound, err := handler.hashtableService.Get(request.Key)
 
-	if errors.Is(err, skiplist.ErrNotFound) {
+	if errors.Is(err, hashtable.ErrNotFound) {
 		c.JSON(404, gin.H{"error": err.Error()})
 		return
 	}
@@ -113,7 +112,7 @@ func (handler *HashTableHandler) Delete(c *gin.Context) {
 
 	deletedValue, err := handler.hashtableService.Delete(request.Key)
 
-	if errors.Is(err, skiplist.ErrNotFound) {
+	if errors.Is(err, hashtable.ErrNotFound) {
 		c.JSON(404, gin.H{"error": err.Error()})
 		return
 	}
